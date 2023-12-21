@@ -1,11 +1,11 @@
 # Resourcely Github Actions Scaffolding
 
 This repository demonstrates how to integrate Resourcely into
-repository that used Github Actions as the Terraform runner..
+repository that used Github Actions as the Terraform runner.
 
 It contains a [workflow](.github/workflows/terraform.yml) that runs
 `terraform plan` and then uses the [Resourcely Github
-Action](https://github.com/Resourcely-Inc/resourcely-action` to
+Action](https://github.com/Resourcely-Inc/resourcely-action) to
 evaluate guardrails on that plan.
 
 ## Assumptions

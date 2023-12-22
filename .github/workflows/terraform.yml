@@ -67,5 +67,5 @@ jobs:
         uses: Resourcely-Inc/resourcely-action@v1
         with:
           resourcely_api_token: ${{ secrets.RESOURCELY_API_TOKEN }}
-          resourcely_api_host: "https://api.dev.resourcely.io"
+          resourcely_api_host: "https://api.resourcely.io"
           tf_plan_directory: "tf-plan-files"

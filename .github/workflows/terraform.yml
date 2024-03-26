@@ -64,7 +64,7 @@ jobs:
           path: tf-plan-files/
 
       - name: Resourcely CI
-        uses: Resourcely-Inc/resourcely-action@v1
+        uses: Resourcely-Inc/resourcely-action@main
         with:
           resourcely_api_token: ${{ secrets.RESOURCELY_API_TOKEN }}
           resourcely_api_host: "https://api.resourcely.io"

@@ -1,0 +1,25 @@
+version: "2"
+
+#  Terraform config roots that Resourcely should care about.
+terraform_config_roots:
+  - name: Project Resourcely
+
+    # Path to the Terraform working directory (relative to the current file location)
+    path: .
+
+    # The default file for Resourcely to put new resources in.
+    default_file: main.tf
+
+    # Whether this a root-module or a shared-module.
+    type: "simple"
+
+    # The default file for Resourcely to put new variables in.
+    var_file: vars.tf
+
+    # Environment configuration for this config root
+    environments:
+      - name: dev
+        tfvars_file: dev.tfvars
+
+      - name: prod
+        tfvars_file: prod.tfvars

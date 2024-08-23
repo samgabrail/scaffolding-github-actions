@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  # We don't want to create any real cloud resources from this
+  # repo. It is just for demonstrating guardrails evaluation on TF
+  # plans. So use dummy credentials that would fail if we ever tried
+  # to run `tf apply.
+  AWS_ACCESS_KEY: "asdf"
+  AWS_SECRET_KEY: "asdf"
+  GOOGLE_OAUTH_ACCESS_TOKEN: "asdf"
+
 jobs:
   terraform:
     name: 'Terraform'
@@ -15,6 +24,10 @@ jobs:
     defaults:
       run:
         shell: bash
+
+    strategy:
+      matrix:
+        env: ["dev", "prod"]
 
     steps:
       - name: Checkout
@@ -27,7 +40,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -out=plan.raw
+        run: terraform plan -state=${{ matrix.env }}.tfstate -var-file=${{ matrix.env }}.tfvars -refresh=false -out=plan.raw
 
       - name: Convert the plan to JSON
         id: planToJson
@@ -37,22 +50,23 @@ jobs:
         uses: fishcharlie/CmdToFile@v1.0.0
         with:
           data: ${{ steps.planToJson.outputs.stdout }}
-          output: plan.json
+          output: plan-${{ matrix.env }}.json
 
       - name: Upload Terraform Plan Output
         uses: actions/upload-artifact@v2
         with:
-          name: plan-file
-          path: plan.json
+          name: plan-file-${{ matrix.env }}
+          path: plan-${{ matrix.env }}.json
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -state=${{ matrix.env }}.tfstate -var-file=dev.tfvars -input=false
 
   resourcely-ci:
     needs: terraform
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -60,8 +74,31 @@ jobs:
       - name: Download Terraform Plan Output
         uses: actions/download-artifact@v2
         with:
-          name: plan-file
+          name: plan-file-dev
           path: tf-plan-files/
+
+      - name: Download Terraform Plan Output
+        uses: actions/download-artifact@v2
+        with:
+          name: plan-file-prod
+          path: tf-plan-files/
+
+      - name: Save JSON to a file
+        uses: fishcharlie/CmdToFile@v1.0.0
+        with:
+          data: |
+            {
+              "plans": [{
+                "plan_file": "plan-dev.json",
+                "config_root_path": ".",
+                "environment": "dev"
+              },{
+                "plan_file": "plan-prod.json",
+                "config_root_path": ".",
+                "environment": "prod"
+              }]
+            }
+          output: tf-plan-files/manifest.json
 
       - name: Resourcely CI
         uses: Resourcely-Inc/resourcely-action@v1

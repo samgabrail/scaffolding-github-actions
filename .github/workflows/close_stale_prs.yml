@@ -1,0 +1,22 @@
+name : Close inactive pull requests
+on:
+  schedule:
+    - cron: "0 3 * * *" # everyday at 3:00 AM
+  workflow_dispatch:
+
+jobs:
+  close-pull-requests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to delete branches
+      issues: read
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-stale: -1
+          days-before-close: -1
+          days-before-pr-stale: 7
+          days-before-pr-close: 0 # close immediately after marking as stale
+          delete-branch: true

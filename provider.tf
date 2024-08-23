@@ -1,18 +1,16 @@
-// Configure the provider(s) for your cloud platform(s).
-//
-// See https://registry.terraform.io/browse/providers for a full list
-// of supported providers and configuration instructions.
-//
-// provider "<foo>" {
-//    ...
-// }
+provider "aws" {
+  region = "us-east-1"
 
-// # Example:
-// provider "aws" {
-//   region = "us-east-1"
-// 
-// }
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+  access_key = "mock_access_key"
+  secret_key = "mock_secret_key"
+}
 
-// provider "github" {}
+provider "github" {}
 
-// provider "google" {}
+provider "google" {
+  project = "demo"
+  region  = "us-central1"
+}

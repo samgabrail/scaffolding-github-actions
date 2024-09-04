@@ -53,7 +53,7 @@ jobs:
           output: plan-${{ matrix.env }}.json
 
       - name: Upload Terraform Plan Output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: plan-file-${{ matrix.env }}
           path: plan-${{ matrix.env }}.json

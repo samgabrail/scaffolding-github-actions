@@ -7,7 +7,7 @@ resource "null_resource" "foo" {
 }
 
 resource "aws_db_instance" "mydb_WkKSSQ7WFfLjA9ny" {
-  allocated_storage   = 50
+  allocated_storage   = 20
   db_name             = "mydb"
   engine              = "postgres"
   engine_version      = "16.4"
